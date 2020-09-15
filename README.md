@@ -59,6 +59,10 @@ If successful, the response will contain the JWT token that must be used for alm
 
 #### Register customer
 
+```shell script
+http POST :2222/customers < data.json
+```
+
 Example data:
 
 ```json
@@ -77,10 +81,6 @@ Example data:
         "phone": "+145752148552"
     }
 }
-```
-
-```shell script
-http POST :2222/customers < data.json
 ```
 
 #### Get all customers
@@ -95,6 +95,10 @@ http :2222/customers Authorization:"Bearer your_jwt_token"
 
 *Only available to ADMIN role.*
 
+```shell script
+http POST :2222/staff Authorization:"Bearer your_jwt_token" < data.json
+```
+
 Example data:
 
 ```json
@@ -113,10 +117,6 @@ Example data:
         "phone": "+145752148552"
     }
 }
-```
-
-```shell script
-http POST :2222/staff Authorization:"Bearer your_jwt_token" < data.json
 ```
 
 #### Get all staff
