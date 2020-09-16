@@ -48,6 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             it.mvcMatchers("/auth/**").permitAll();
             it.mvcMatchers("/staff").hasRole("ADMIN");
             it.mvcMatchers(HttpMethod.POST, "/customers").permitAll();
+            it.mvcMatchers("/customers/**").hasRole("STAFF");
             it.mvcMatchers(HttpMethod.GET, "/products").permitAll();
             it.mvcMatchers(HttpMethod.GET, "/products/{userId:" + UUID_REGEX + "}").permitAll();
             it.anyRequest().authenticated();

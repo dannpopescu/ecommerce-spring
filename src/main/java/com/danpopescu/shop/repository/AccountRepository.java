@@ -18,5 +18,9 @@ public interface AccountRepository extends PagingAndSortingRepository<Account, U
 
     boolean existsByEmail(String email);
 
+    boolean existsByIdAndRole(UUID id, Role role);
+
     List<Account> findAllByRole(Role role);
+
+    Optional<Account> findByIdAndRole(UUID id, Role role);
 }

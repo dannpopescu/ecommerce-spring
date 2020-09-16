@@ -2,7 +2,10 @@ package com.danpopescu.shop.controller;
 
 import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.payload.AccountRepresentations;
-import com.danpopescu.shop.payload.AccountRepresentations.*;
+import com.danpopescu.shop.payload.AccountRepresentations.AccountCreateInputDto;
+import com.danpopescu.shop.payload.AccountRepresentations.AccountDetailsDto;
+import com.danpopescu.shop.payload.AccountRepresentations.AccountSummaryDto;
+import com.danpopescu.shop.payload.AccountRepresentations.AccountUpdateInputDto;
 import com.danpopescu.shop.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,23 +20,23 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/staff")
+@RequestMapping("/customers")
 @RequiredArgsConstructor
-public class StaffAccountController {
+public class CustomerAccountController {
 
     private final AccountService accountService;
     private final AccountRepresentations representations;
 
     @PostMapping
-    public ResponseEntity<?> createStaffAccount(@Valid @RequestBody AccountCreateInputDto payload,
-                                                Errors errors) {
+    public ResponseEntity<?> createCustomerAccount(@Valid @RequestBody AccountCreateInputDto payload,
+                                                   Errors errors) {
 
         payload.validate(errors, accountService);
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        Account account = accountService.createStaffAccount(representations.from(payload));
+        Account account = accountService.createCustomerAccount(representations.from(payload));
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}")
@@ -43,25 +46,25 @@ public class StaffAccountController {
     }
 
     @GetMapping
-    public List<AccountSummaryDto> getStaffAccounts() {
-        List<Account> accounts = accountService.findAllStaffAccounts();
+    public List<AccountSummaryDto> getCustomerAccounts() {
+        List<Account> accounts = accountService.findAllCustomerAccounts();
         return accounts.stream()
                 .map(representations::toSummary)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public AccountDetailsDto getStaffAccount(@PathVariable UUID id) {
-        Account account = accountService.findStaffAccountById(id);
+    public AccountDetailsDto getCustomerAccount(@PathVariable UUID id) {
+        Account account = accountService.findCustomerAccountById(id);
         return representations.toDetails(account);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStaffAccount(@PathVariable UUID id,
-                                                @Valid @RequestBody AccountUpdateInputDto payload,
-                                                Errors errors) {
+    public ResponseEntity<?> updateCustomerAccount(@PathVariable UUID id,
+                                                   @Valid @RequestBody AccountUpdateInputDto payload,
+                                                   Errors errors) {
 
-        Account existing = accountService.findStaffAccountById(id);
+        Account existing = accountService.findCustomerAccountById(id);
 
         payload.validate(errors, existing, accountService);
         if (errors.hasErrors()) {
@@ -73,20 +76,10 @@ public class StaffAccountController {
         return ResponseEntity.ok(representations.toDetails(updated));
     }
 
-    @PutMapping("/{id}/password")
-    public ResponseEntity<?> updateStaffAccountPassword(@PathVariable UUID id,
-                                                        @Valid @RequestBody PasswordUpdateInputDto payload,
-                                                        Errors errors) {
-
-        Account account = accountService.findStaffAccountById(id);
-
-        payload.validate(errors);
-        if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors);
-        }
-
-        accountService.changePassword(account, payload.getPassword());
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCustomerAccount(@PathVariable UUID id) {
+        accountService.deleteCustomerAccountById(id);
         return ResponseEntity.noContent().build();
     }
+
 }

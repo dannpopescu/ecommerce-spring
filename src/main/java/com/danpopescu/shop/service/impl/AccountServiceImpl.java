@@ -3,7 +3,6 @@ package com.danpopescu.shop.service.impl;
 import com.danpopescu.shop.exception.ResourceNotFoundException;
 import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.model.Role;
-import com.danpopescu.shop.payload.SignUpRequest;
 import com.danpopescu.shop.repository.AccountRepository;
 import com.danpopescu.shop.service.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -42,13 +41,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account createCustomer(SignUpRequest signUpRequest) {
-        return createUser(signUpRequest, Role.ROLE_CUSTOMER);
+    public Account createStaffAccount(Account account) {
+        account.setRole(Role.ROLE_STAFF);
+        return accountRepository.save(account);
     }
 
     @Override
-    public Account createStaffAccount(Account account) {
-        account.setRole(Role.ROLE_STAFF);
+    public Account createCustomerAccount(Account account) {
+        account.setRole(Role.ROLE_CUSTOMER);
         return accountRepository.save(account);
     }
 
@@ -58,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAllCustomers() {
+    public List<Account> findAllCustomerAccounts() {
         return accountRepository.findAllByRole(Role.ROLE_CUSTOMER);
     }
 
@@ -83,19 +83,23 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
-    private Account createUser(SignUpRequest signUpRequest, Role role) {
-        Account account = Account.builder()
-                .firstName(signUpRequest.getFirstName())
-                .lastName(signUpRequest.getLastName())
-                .email(signUpRequest.getEmail())
-                .username(signUpRequest.getUsername())
-                .active(signUpRequest.getActive())
-                .address(signUpRequest.getAddress())
-                .build();
+    @Override
+    public Account findStaffAccountById(UUID id) {
+        return accountRepository.findByIdAndRole(id, Role.ROLE_STAFF)
+                .orElseThrow(() -> new ResourceNotFoundException("Staff Account", "id", id));
+    }
 
-        account.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        account.setRole(role);
+    @Override
+    public Account findCustomerAccountById(UUID id) {
+        return accountRepository.findByIdAndRole(id, Role.ROLE_CUSTOMER)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer Account", "id", id));
+    }
 
-        return accountRepository.save(account);
+    @Override
+    public void deleteCustomerAccountById(UUID id) {
+        if (!accountRepository.existsByIdAndRole(id, Role.ROLE_CUSTOMER)) {
+            throw new ResourceNotFoundException("Customer Account", "id", id);
+        }
+        accountRepository.deleteById(id);
     }
 }
