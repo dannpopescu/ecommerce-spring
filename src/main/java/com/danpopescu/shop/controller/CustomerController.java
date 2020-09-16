@@ -63,7 +63,7 @@ public class CustomerController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('STAFF')")
     public UserProfile getCustomerProfile(@PathVariable UUID id) {
-        Account customer = accountService.getById(id);
+        Account customer = accountService.findById(id);
         return mapper.userToUserProfile(customer);
     }
 
@@ -93,7 +93,7 @@ public class CustomerController {
             }
         }
 
-        Account account = accountService.getById(id);
+        Account account = accountService.findById(id);
         Account updated = patchHelper.mergePatch(patchDocument, account, Account.class);
         accountService.save(updated);
         return ResponseEntity.noContent().build();

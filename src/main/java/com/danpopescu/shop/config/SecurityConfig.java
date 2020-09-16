@@ -39,26 +39,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .cors()
-                    .and()
-                .csrf()
-                    .disable()
-                .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                .authorizeRequests()
-                    .expressionHandler(webExpressionHandler())
-                    .antMatchers("/auth/**")
-                        .permitAll()
-                    .mvcMatchers(HttpMethod.POST, "/customers")
-                        .permitAll()
-                    .mvcMatchers(HttpMethod.GET, "/products")
-                        .permitAll()
-                    .mvcMatchers(HttpMethod.GET, "/products/{userId:" + UUID_REGEX + "}")
-                        .permitAll()
-                    .anyRequest()
-                        .authenticated();
+        http.csrf().disable();
+        http.cors();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.authorizeRequests(it -> {
+            it.expressionHandler(webExpressionHandler());
+            it.mvcMatchers("/auth/**").permitAll();
+            it.mvcMatchers("/staff").hasRole("ADMIN");
+            it.mvcMatchers(HttpMethod.POST, "/customers").permitAll();
+            it.mvcMatchers(HttpMethod.GET, "/products").permitAll();
+            it.mvcMatchers(HttpMethod.GET, "/products/{userId:" + UUID_REGEX + "}").permitAll();
+            it.anyRequest().authenticated();
+        });
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }

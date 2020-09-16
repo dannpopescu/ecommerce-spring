@@ -20,11 +20,11 @@ public interface AccountService {
 
     Account createStaffAccount(Account account);
 
-    List<Account> getAllStaffMembers();
+    List<Account> findAllStaffAccounts();
 
     List<Account> getAllCustomers();
 
-    Account getById(UUID id);
+    Account findById(UUID id);
 
     void deleteById(UUID id);
 }

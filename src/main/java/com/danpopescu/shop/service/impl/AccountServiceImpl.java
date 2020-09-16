@@ -53,7 +53,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAllStaffMembers() {
+    public List<Account> findAllStaffAccounts() {
         return accountRepository.findAllByRole(Role.ROLE_STAFF);
     }
 
@@ -64,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public Account getById(UUID id) throws ResourceNotFoundException {
+    public Account findById(UUID id) throws ResourceNotFoundException {
         return accountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }

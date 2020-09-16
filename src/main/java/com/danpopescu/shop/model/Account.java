@@ -3,8 +3,8 @@ package com.danpopescu.shop.model;
 import com.danpopescu.shop.model.audit.DateAudit;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -19,6 +19,8 @@ import javax.validation.constraints.Size;
 })
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
 public class Account extends DateAudit {
 
     @NotBlank
@@ -29,13 +31,11 @@ public class Account extends DateAudit {
     @Size(min = 1, max = 40)
     private String lastName;
 
-    @NaturalId
     @NotBlank
     @Size(max = 40)
     @Email
     private String email;
 
-    @NaturalId
     @NotBlank
     @Size(max = 15)
     private String username;
@@ -55,19 +55,4 @@ public class Account extends DateAudit {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    public Account() {
-    }
-
-    @Builder
-    public Account(String firstName, String lastName, String email, String username, String password,
-                   Boolean active, Address address, Role role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.active = active;
-        this.address = address;
-        this.role = role;
-    }
 }

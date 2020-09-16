@@ -33,7 +33,12 @@ public class AccountRepresentations {
     }
 
     public Account from(AccountUpdateInputDto payload, Account existing) {
-        return new Account();
+        existing.setFirstName(payload.getFirstName());
+        existing.setLastName(payload.getLastName());
+        existing.setUsername(payload.getUsername());
+        existing.setEmail(payload.getEmail());
+        existing.setAddress(payload.getAddress());
+        return existing;
     }
 
     public AccountSummaryDto toSummary(Account account) {
@@ -57,17 +62,6 @@ public class AccountRepresentations {
         return dto;
     }
 
-    private static void validateUsernameAndEmail(Errors errors, String username, String email,
-                                                 AccountService accountService) {
-        if (accountService.existsByUsername(username)) {
-            errors.rejectValue("username", "UsernameNotAvailable");
-        }
-
-        if (accountService.existsByEmail(email)) {
-            errors.rejectValue("email", "EmailNotAvailable");
-        }
-    }
-
     @Data
     public static class AccountSummaryDto {
         private String id, firstName, lastName, email, username;
@@ -86,12 +80,37 @@ public class AccountRepresentations {
         private @NotNull @Valid Address address;
 
         public void validate(Errors errors, AccountService accountService) {
-            validateUsernameAndEmail(errors, this.username, this.email, accountService);
+            validateUsername(errors, this.username, accountService);
+            validateEmail(errors, this.email, accountService);
         }
     }
 
     @Data
     public static class AccountUpdateInputDto {
+        private @NotBlank String firstName, lastName, username;
+        private @NotBlank @Email String email;
+        private @NotNull @Valid Address address;
 
+        public void validate(Errors errors, Account existing, AccountService accountService) {
+            if (!existing.getUsername().equals(this.username)) {
+                validateUsername(errors, username, accountService);
+            }
+
+            if (!existing.getEmail().equals(this.email)) {
+                validateEmail(errors, email, accountService);
+            }
+        }
+    }
+
+    private static void validateEmail(Errors errors, String email, AccountService accountService) {
+        if (accountService.existsByEmail(email)) {
+            errors.rejectValue("email", "EmailNotAvailable");
+        }
+    }
+
+    private static void validateUsername(Errors errors, String username, AccountService accountService) {
+        if (accountService.existsByUsername(username)) {
+            errors.rejectValue("username", "UsernameNotAvailable");
+        }
     }
 }
