@@ -3,6 +3,7 @@ package com.danpopescu.shop.payload;
 import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.model.Address;
 import com.danpopescu.shop.service.AccountService;
+import io.jsonwebtoken.lang.Objects;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +15,12 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+/**
+ * A class for all Account-related Data-Transfer-Objects.
+ *
+ * The class is a derivative of the code from Quarano project:
+ * https://github.com/quarano/quarano-application/blob/develop/backend/src/main/java/quarano/account/web/StaffAccountRepresentations.java
+ */
 @Component
 @RequiredArgsConstructor
 public class AccountRepresentations {
@@ -75,13 +82,15 @@ public class AccountRepresentations {
 
     @Data
     public static class AccountCreateInputDto {
-        private @NotBlank String firstName, lastName, username, password;
+        private @NotBlank String firstName, lastName, username;
         private @NotBlank @Email String email;
+        private @NotBlank String password, passwordConfirm;
         private @NotNull @Valid Address address;
 
         public void validate(Errors errors, AccountService accountService) {
             validateUsername(errors, this.username, accountService);
             validateEmail(errors, this.email, accountService);
+            validatePassword(errors, this.password, this.passwordConfirm);
         }
     }
 
@@ -93,12 +102,21 @@ public class AccountRepresentations {
 
         public void validate(Errors errors, Account existing, AccountService accountService) {
             if (!existing.getUsername().equals(this.username)) {
-                validateUsername(errors, username, accountService);
+                validateUsername(errors, this.username, accountService);
             }
 
             if (!existing.getEmail().equals(this.email)) {
-                validateEmail(errors, email, accountService);
+                validateEmail(errors, this.email, accountService);
             }
+        }
+    }
+
+    @Data
+    public static class PasswordUpdateInputDto {
+        private @NotBlank String password, passwordConfirm;
+
+        public void validate(Errors errors) {
+            validatePassword(errors, this.password, this.passwordConfirm);
         }
     }
 
@@ -111,6 +129,13 @@ public class AccountRepresentations {
     private static void validateUsername(Errors errors, String username, AccountService accountService) {
         if (accountService.existsByUsername(username)) {
             errors.rejectValue("username", "UsernameNotAvailable");
+        }
+    }
+
+    private static void validatePassword(Errors errors, String password, String passwordConfirm) {
+        if (!Objects.nullSafeEquals(password, passwordConfirm)) {
+            errors.rejectValue("password", "NonMatchingPassword");
+            errors.rejectValue("passwordConfirm", "NonMatchingPassword");
         }
     }
 }

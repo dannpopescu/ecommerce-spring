@@ -77,6 +77,12 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.deleteById(id);
     }
 
+    @Override
+    public void changePassword(Account account, String password) {
+        account.setPassword(passwordEncoder.encode(password));
+        accountRepository.save(account);
+    }
+
     private Account createUser(SignUpRequest signUpRequest, Role role) {
         Account account = Account.builder()
                 .firstName(signUpRequest.getFirstName())

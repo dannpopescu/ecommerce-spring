@@ -6,6 +6,7 @@ import com.danpopescu.shop.payload.AccountRepresentations;
 import com.danpopescu.shop.payload.AccountRepresentations.AccountCreateInputDto;
 import com.danpopescu.shop.payload.AccountRepresentations.AccountSummaryDto;
 import com.danpopescu.shop.payload.AccountRepresentations.AccountUpdateInputDto;
+import com.danpopescu.shop.payload.AccountRepresentations.PasswordUpdateInputDto;
 import com.danpopescu.shop.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -60,10 +61,7 @@ public class StaffAccountController {
                                          Errors errors) {
 
         Account existing = accountService.findById(id);
-        if (existing.getRole() != Role.ROLE_STAFF) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Account with id = '" + id + "' is not a staff account");
-        }
+        checkIsStaffAccount(existing);
 
         payload.validate(errors, existing, accountService);
         if (errors.hasErrors()) {
@@ -73,6 +71,31 @@ public class StaffAccountController {
         Account updated = accountService.save(representations.from(payload, existing));
 
         return ResponseEntity.ok(representations.toDetails(updated));
+    }
+
+    @PutMapping("/{id}/password")
+    ResponseEntity<?> updateStaffAccountPassword(@PathVariable UUID id,
+                                                 @Valid @RequestBody PasswordUpdateInputDto payload,
+                                                 Errors errors) {
+
+        Account account = accountService.findById(id);
+        checkIsStaffAccount(account);
+
+        payload.validate(errors);
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        accountService.changePassword(account, payload.getPassword());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    private void checkIsStaffAccount(Account account) {
+        if (account.getRole() != Role.ROLE_STAFF) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Account with id = '" + account.getId() + "' is not a staff account");
+        }
     }
 
 }

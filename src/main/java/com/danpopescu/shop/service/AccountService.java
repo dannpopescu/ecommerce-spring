@@ -27,4 +27,6 @@ public interface AccountService {
     Account findById(UUID id);
 
     void deleteById(UUID id);
+
+    void changePassword(Account account, String password);
 }
