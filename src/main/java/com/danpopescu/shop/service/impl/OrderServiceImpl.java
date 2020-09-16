@@ -1,13 +1,13 @@
 package com.danpopescu.shop.service.impl;
 
 import com.danpopescu.shop.exception.ResourceNotFoundException;
+import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.model.Order;
 import com.danpopescu.shop.model.Product;
-import com.danpopescu.shop.model.User;
 import com.danpopescu.shop.payload.CreateOrderRequest;
+import com.danpopescu.shop.repository.AccountRepository;
 import com.danpopescu.shop.repository.OrderRepository;
 import com.danpopescu.shop.repository.ProductRepository;
-import com.danpopescu.shop.repository.UserRepository;
 import com.danpopescu.shop.security.UserPrincipal;
 import com.danpopescu.shop.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +24,12 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     @Transactional
     public Order createOrder(UserPrincipal userPrincipal, CreateOrderRequest orderRequest) {
-        User customer = userRepository.findById(userPrincipal.getId())
+        Account customer = accountRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
         Product product = productRepository.findById(orderRequest.getPid())
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", orderRequest.getPid()));

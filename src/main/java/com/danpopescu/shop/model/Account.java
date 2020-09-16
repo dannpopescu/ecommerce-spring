@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 })
 @Getter
 @Setter
-public class User extends DateAudit {
+public class Account extends DateAudit {
 
     @NotBlank
     @Size(min = 1, max = 40)
@@ -55,12 +55,12 @@ public class User extends DateAudit {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    public User() {
+    public Account() {
     }
 
     @Builder
-    public User(String firstName, String lastName, String email, String username, String password,
-                Boolean active, Address address, Role role) {
+    public Account(String firstName, String lastName, String email, String username, String password,
+                   Boolean active, Address address, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

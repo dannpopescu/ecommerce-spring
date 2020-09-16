@@ -1,7 +1,7 @@
 package com.danpopescu.shop.repository;
 
+import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.model.Role;
-import com.danpopescu.shop.model.User;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,13 +10,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends PagingAndSortingRepository<User, UUID> {
+public interface AccountRepository extends PagingAndSortingRepository<Account, UUID> {
 
-    Optional<User> findByUsername(String username);
+    Optional<Account> findByUsername(String username);
 
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
 
-    List<User> findAllByRole(Role role);
+    List<Account> findAllByRole(Role role);
 }

@@ -1,11 +1,11 @@
 package com.danpopescu.shop.service.impl;
 
 import com.danpopescu.shop.exception.ResourceNotFoundException;
+import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.model.Role;
-import com.danpopescu.shop.model.User;
 import com.danpopescu.shop.payload.SignUpRequest;
-import com.danpopescu.shop.repository.UserRepository;
-import com.danpopescu.shop.service.UserService;
+import com.danpopescu.shop.repository.AccountRepository;
+import com.danpopescu.shop.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,68 +16,69 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class AccountServiceImpl implements AccountService {
 
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+        return accountRepository.existsByUsername(username);
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+        return accountRepository.existsByEmail(email);
     }
 
     @Override
     public boolean existsById(UUID id) {
-        return userRepository.existsById(id);
+        return accountRepository.existsById(id);
     }
 
     @Override
-    public User save(User user) {
-        return userRepository.save(user);
+    public Account save(Account account) {
+        return accountRepository.save(account);
     }
 
     @Override
-    public User createCustomer(SignUpRequest signUpRequest) {
+    public Account createCustomer(SignUpRequest signUpRequest) {
         return createUser(signUpRequest, Role.ROLE_CUSTOMER);
     }
 
     @Override
-    public User createStaffMember(SignUpRequest signUpRequest) {
-        return createUser(signUpRequest, Role.ROLE_STAFF);
+    public Account createStaffAccount(Account account) {
+        account.setRole(Role.ROLE_STAFF);
+        return accountRepository.save(account);
     }
 
     @Override
-    public List<User> getAllStaffMembers() {
-        return userRepository.findAllByRole(Role.ROLE_STAFF);
+    public List<Account> getAllStaffMembers() {
+        return accountRepository.findAllByRole(Role.ROLE_STAFF);
     }
 
     @Override
-    public List<User> getAllCustomers() {
-        return userRepository.findAllByRole(Role.ROLE_CUSTOMER);
+    public List<Account> getAllCustomers() {
+        return accountRepository.findAllByRole(Role.ROLE_CUSTOMER);
     }
 
     @Override
     @Transactional
-    public User getById(UUID id) throws ResourceNotFoundException {
-        return userRepository.findById(id)
+    public Account getById(UUID id) throws ResourceNotFoundException {
+        return accountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
 
     @Override
     public void deleteById(UUID id) throws ResourceNotFoundException {
-        if (!userRepository.existsById(id)) {
+        if (!accountRepository.existsById(id)) {
             throw new ResourceNotFoundException("User", "id", id);
         }
-        userRepository.deleteById(id);
+        accountRepository.deleteById(id);
     }
 
-    private User createUser(SignUpRequest signUpRequest, Role role) {
-        User user = User.builder()
+    private Account createUser(SignUpRequest signUpRequest, Role role) {
+        Account account = Account.builder()
                 .firstName(signUpRequest.getFirstName())
                 .lastName(signUpRequest.getLastName())
                 .email(signUpRequest.getEmail())
@@ -86,9 +87,9 @@ public class UserServiceImpl implements UserService {
                 .address(signUpRequest.getAddress())
                 .build();
 
-        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        user.setRole(role);
+        account.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        account.setRole(role);
 
-        return userRepository.save(user);
+        return accountRepository.save(account);
     }
 }

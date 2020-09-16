@@ -19,7 +19,7 @@ public class Order extends DateAudit {
 
     @NotNull
     @ManyToOne
-    private User user;
+    private Account account;
 
     @NotNull
     @ManyToOne
@@ -34,8 +34,8 @@ public class Order extends DateAudit {
     public Order() {
     }
 
-    public Order(User user, Product product, int count, String comment) {
-        this.user = user;
+    public Order(Account account, Product product, int count, String comment) {
+        this.account = account;
         this.product = product;
         this.count = count;
         this.comment = comment;

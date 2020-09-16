@@ -1,38 +1,38 @@
 package com.danpopescu.shop.util;
 
+import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.model.Order;
 import com.danpopescu.shop.model.Product;
-import com.danpopescu.shop.model.User;
 import com.danpopescu.shop.payload.*;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Mapper {
 
-    public UserSummary userToUserSummary(User user) {
+    public UserSummary userToUserSummary(Account account) {
         return new UserSummary(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getUsername()
+                account.getId(),
+                account.getFirstName(),
+                account.getLastName(),
+                account.getUsername()
         );
     }
 
-    public UserProfile userToUserProfile(User user) {
+    public UserProfile userToUserProfile(Account account) {
         return new UserProfile(
-                user.getId(),
-                user.getFirstName(),
-                user.getFirstName(),
-                user.getEmail(),
-                user.getUsername(),
-                user.getAddress()
+                account.getId(),
+                account.getFirstName(),
+                account.getFirstName(),
+                account.getEmail(),
+                account.getUsername(),
+                account.getAddress()
         );
     }
 
     public OrderSummary orderToOrderSummary(Order order) {
         return new OrderSummary(
                 order.getId(),
-                order.getUser().getId(),
+                order.getAccount().getId(),
                 order.getProduct().getId(),
                 order.getCount(),
                 order.getComment()
@@ -42,7 +42,7 @@ public class Mapper {
     public OrderResponse orderToOrderResponse(Order order) {
         return new OrderResponse(
                 order.getId(),
-                userToUserProfile(order.getUser()),
+                userToUserProfile(order.getAccount()),
                 productToProductResponse(order.getProduct()),
                 order.getCount(),
                 order.getComment(),

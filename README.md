@@ -49,7 +49,7 @@ We'll use [HTTPie](https://httpie.org/) for making requests.
 
 #### Authenticate
 
-By default, we have 3 user accounts with 3 different roles: admin, staff, customer. For each one, the password is `123`.
+By default, we have 3 account accounts with 3 different roles: admin, staff, customer. For each one, the password is `123`.
 
 ```shell script
 http POST :2222/auth/login username=admin password=123
@@ -188,7 +188,7 @@ http DELETE :2222/products/{productID} Authorization:"Bearer your_jwt_token"
 
 #### Create order
 
-The order will be created for the user whose JWT token is.
+The order will be created for the account whose JWT token is.
 
 ```shell script
 http POST :2222/orders Authorization:"Bearer your_jwt_token" < data.json

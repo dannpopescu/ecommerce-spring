@@ -1,11 +1,11 @@
 package com.danpopescu.shop.controller;
 
-import com.danpopescu.shop.model.User;
+import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.payload.ApiResponse;
 import com.danpopescu.shop.payload.SignUpRequest;
 import com.danpopescu.shop.payload.UserProfile;
 import com.danpopescu.shop.payload.UserSummary;
-import com.danpopescu.shop.service.UserService;
+import com.danpopescu.shop.service.AccountService;
 import com.danpopescu.shop.util.Mapper;
 import com.danpopescu.shop.util.PatchHelper;
 import lombok.RequiredArgsConstructor;
@@ -28,27 +28,27 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomerController {
 
-    private final UserService userService;
+    private final AccountService accountService;
     private final Mapper mapper;
     private final PatchHelper patchHelper;
 
     @PostMapping
     public ResponseEntity<?> registerCustomer(@Valid @RequestBody SignUpRequest signUpRequest) {
-        if (userService.existsByEmail(signUpRequest.getEmail())) {
+        if (accountService.existsByEmail(signUpRequest.getEmail())) {
             return new ResponseEntity<>(new ApiResponse(false, "Email address is already taken"),
                     HttpStatus.BAD_REQUEST);
         }
 
-        if (userService.existsByEmail(signUpRequest.getUsername())) {
+        if (accountService.existsByEmail(signUpRequest.getUsername())) {
             return new ResponseEntity<>(new ApiResponse(false, "Username is already taken"),
                     HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.createCustomer(signUpRequest);
+        Account account = accountService.createCustomer(signUpRequest);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}")
-                .buildAndExpand(user.getId()).toUri();
+                .buildAndExpand(account.getId()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "Customer registered successfully"));
     }
@@ -56,25 +56,25 @@ public class CustomerController {
     @GetMapping
     @PreAuthorize("hasRole('STAFF')")
     public List<UserSummary> getAllCustomers() {
-        List<User> staffMembers = userService.getAllCustomers();
+        List<Account> staffMembers = accountService.getAllCustomers();
         return toUserSummaries(staffMembers);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('STAFF')")
     public UserProfile getCustomerProfile(@PathVariable UUID id) {
-        User customer = userService.getById(id);
+        Account customer = accountService.getById(id);
         return mapper.userToUserProfile(customer);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('STAFF')")
     public ResponseEntity<?> deleteCustomer(@PathVariable UUID id) {
-        userService.deleteById(id);
+        accountService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    private List<UserSummary> toUserSummaries(List<User> staffMembers) {
+    private List<UserSummary> toUserSummaries(List<Account> staffMembers) {
         return staffMembers.stream()
                 .map(mapper::userToUserSummary)
                 .collect(Collectors.toList());
@@ -93,9 +93,9 @@ public class CustomerController {
             }
         }
 
-        User user = userService.getById(id);
-        User updated = patchHelper.mergePatch(patchDocument, user, User.class);
-        userService.save(updated);
+        Account account = accountService.getById(id);
+        Account updated = patchHelper.mergePatch(patchDocument, account, Account.class);
+        accountService.save(updated);
         return ResponseEntity.noContent().build();
     }
 
