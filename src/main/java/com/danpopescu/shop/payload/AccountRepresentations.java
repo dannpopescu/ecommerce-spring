@@ -1,8 +1,8 @@
 package com.danpopescu.shop.payload;
 
 import com.danpopescu.shop.model.Account;
-import com.danpopescu.shop.model.Address;
 import com.danpopescu.shop.service.AccountService;
+import com.danpopescu.shop.validation.Username;
 import io.jsonwebtoken.lang.Objects;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,25 +26,27 @@ import javax.validation.constraints.NotNull;
 public class AccountRepresentations {
 
     private final PasswordEncoder passwordEncoder;
+    private final AddressRepresentations addressRepresentations;
 
     public Account from(AccountCreateInputDto payload) {
         return Account.builder()
-                .firstName(payload.getFirstName())
-                .lastName(payload.getLastName())
-                .email(payload.getEmail())
-                .username(payload.getUsername())
+                .firstName(payload.firstName)
+                .lastName(payload.lastName)
+                .email(payload.email)
+                .username(payload.username)
                 .active(true)
-                .address(payload.getAddress())
-                .password(passwordEncoder.encode(payload.getPassword()))
+                .address(addressRepresentations.addressFrom(payload.address))
+                .password(passwordEncoder.encode(payload.password))
                 .build();
     }
 
     public Account from(AccountUpdateInputDto payload, Account existing) {
-        existing.setFirstName(payload.getFirstName());
-        existing.setLastName(payload.getLastName());
-        existing.setUsername(payload.getUsername());
-        existing.setEmail(payload.getEmail());
-        existing.setAddress(payload.getAddress());
+        existing.setFirstName(payload.firstName);
+        existing.setLastName(payload.lastName);
+        existing.setEmail(payload.email);
+        existing.setUsername(payload.username);
+        existing.setAddress(addressRepresentations.addressFrom(payload.address, existing.getAddress()));
+        existing.setActive(payload.active);
         return existing;
     }
 
@@ -65,7 +67,7 @@ public class AccountRepresentations {
         dto.setLastName(account.getLastName());
         dto.setEmail(account.getEmail());
         dto.setUsername(account.getUsername());
-        dto.setAddress(account.getAddress());
+        dto.setAddress(addressRepresentations.toDto(account.getAddress()));
         return dto;
     }
 
@@ -77,15 +79,16 @@ public class AccountRepresentations {
     @Data
     public static class AccountDetailsDto {
         private String id, firstName, lastName, email, username;
-        private Address address;
+        private AddressRepresentations.AddressDto address;
     }
 
     @Data
     public static class AccountCreateInputDto {
-        private @NotBlank String firstName, lastName, username;
+        private @NotBlank String firstName, lastName;
         private @NotBlank @Email String email;
+        private @NotBlank @Username String username;
         private @NotBlank String password, passwordConfirm;
-        private @NotNull @Valid Address address;
+        private @NotNull @Valid AddressRepresentations.AddressDto address;
 
         public void validate(Errors errors, AccountService accountService) {
             validateUsername(errors, this.username, accountService);
@@ -96,9 +99,11 @@ public class AccountRepresentations {
 
     @Data
     public static class AccountUpdateInputDto {
-        private @NotBlank String firstName, lastName, username;
+        private @NotBlank String firstName, lastName;
         private @NotBlank @Email String email;
-        private @NotNull @Valid Address address;
+        private @NotBlank @Username String username;
+        private @NotNull @Valid AddressRepresentations.AddressDto address;
+        private @NotNull Boolean active;
 
         public void validate(Errors errors, Account existing, AccountService accountService) {
             if (!existing.getUsername().equals(this.username)) {

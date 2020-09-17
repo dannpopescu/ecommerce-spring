@@ -3,20 +3,14 @@ package com.danpopescu.shop.util;
 import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.model.Order;
 import com.danpopescu.shop.model.Product;
-import com.danpopescu.shop.payload.*;
+import com.danpopescu.shop.payload.OrderResponse;
+import com.danpopescu.shop.payload.OrderSummary;
+import com.danpopescu.shop.payload.ProductResponse;
+import com.danpopescu.shop.payload.UserProfile;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Mapper {
-
-    public UserSummary userToUserSummary(Account account) {
-        return new UserSummary(
-                account.getId(),
-                account.getFirstName(),
-                account.getLastName(),
-                account.getUsername()
-        );
-    }
 
     public UserProfile userToUserProfile(Account account) {
         return new UserProfile(

@@ -7,7 +7,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -21,26 +20,9 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class Account extends DateAudit {
 
-    @NotBlank
-    @Size(min = 1, max = 40)
-    private String firstName;
-
-    @NotBlank
-    @Size(min = 1, max = 40)
-    private String lastName;
-
-    @NotBlank
-    @Size(max = 40)
-    @Email
-    private String email;
-
-    @NotBlank
-    @Size(max = 15)
-    private String username;
-
-    @NotBlank
-    @Size(max = 100)
-    private String password;
+    private @NotBlank String firstName, lastName;
+    private @NotBlank String username, password;
+    private @NotBlank @Email String email;
 
     @Enumerated(EnumType.STRING)
     private Role role;
