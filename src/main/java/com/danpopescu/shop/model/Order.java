@@ -1,8 +1,7 @@
 package com.danpopescu.shop.model;
 
 import com.danpopescu.shop.model.audit.DateAudit;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -15,11 +14,14 @@ import javax.validation.constraints.NotNull;
 @Table(name = "orders")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Order extends DateAudit {
 
     @NotNull
     @ManyToOne
-    private Account account;
+    private Account customer;
 
     @NotNull
     @ManyToOne
@@ -31,13 +33,4 @@ public class Order extends DateAudit {
     @NotBlank
     private String comment;
 
-    public Order() {
-    }
-
-    public Order(Account account, Product product, int count, String comment) {
-        this.account = account;
-        this.product = product;
-        this.count = count;
-        this.comment = comment;
-    }
 }

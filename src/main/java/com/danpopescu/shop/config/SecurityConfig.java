@@ -47,9 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             it.mvcMatchers("/auth/**").permitAll();
             it.mvcMatchers("/staff").hasRole("ADMIN");
             it.mvcMatchers(HttpMethod.POST, "/customers").permitAll();
-            it.mvcMatchers("/customers/**").hasRole("STAFF");
             it.mvcMatchers(HttpMethod.GET, "/products/**").permitAll();
-            it.mvcMatchers("/products/**").hasRole("STAFF");
+            it.mvcMatchers(HttpMethod.POST, "/orders").hasRole("CUSTOMER");
+            it.mvcMatchers("/customers/**", "/products/**", "/orders/**").hasRole("STAFF");
             it.anyRequest().authenticated();
         });
 

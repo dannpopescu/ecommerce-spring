@@ -1,16 +1,19 @@
 package com.danpopescu.shop.controller;
 
+import com.danpopescu.shop.model.Account;
 import com.danpopescu.shop.model.Order;
-import com.danpopescu.shop.payload.CreateOrderRequest;
-import com.danpopescu.shop.payload.OrderResponse;
-import com.danpopescu.shop.payload.OrderSummary;
+import com.danpopescu.shop.payload.OrderRepresentations;
+import com.danpopescu.shop.payload.OrderRepresentations.OrderDetailsDto;
+import com.danpopescu.shop.payload.OrderRepresentations.OrderInputDto;
+import com.danpopescu.shop.payload.OrderRepresentations.OrderSummaryDto;
 import com.danpopescu.shop.security.UserPrincipal;
+import com.danpopescu.shop.service.AccountService;
 import com.danpopescu.shop.service.OrderService;
-import com.danpopescu.shop.util.Mapper;
+import com.danpopescu.shop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,42 +29,66 @@ import java.util.stream.Collectors;
 public class OrderController {
 
     private final OrderService orderService;
-    private final Mapper mapper;
+    private final ProductService productService;
+    private final AccountService accountService;
+    private final OrderRepresentations representations;
 
     @PostMapping
-    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> createOrder(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                         @Valid @RequestBody CreateOrderRequest orderRequest) {
+                                         @Valid @RequestBody OrderInputDto payload,
+                                         Errors errors) {
 
-        Order order = orderService.createOrder(userPrincipal, orderRequest);
+        payload.validate(errors, productService);
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(order.getId())
-                .toUri();
+        Order order = representations.from(payload);
+        Account customer = accountService.findCustomerAccountById(userPrincipal.getId());
+        order.setCustomer(customer);
 
-        return ResponseEntity.created(location).build();
+        Order saved = orderService.save(order);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{id}")
+                .buildAndExpand(order.getId()).toUri();
+
+        return ResponseEntity.created(location).body(representations.toDetails(saved));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('STAFF')")
-    public List<OrderSummary> getAllOrders() {
-        List<Order> orders = orderService.getAll();
+    public List<OrderSummaryDto> getOrders() {
+        List<Order> orders = orderService.findAll();
         return orders.stream()
-                .map(mapper::orderToOrderSummary)
+                .map(representations::toSummary)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('STAFF')")
-    public OrderResponse getOrderById(@PathVariable UUID id) {
-        Order order = orderService.getById(id);
-        return mapper.orderToOrderResponse(order);
+    public OrderDetailsDto getOrder(@PathVariable UUID id) {
+        Order order = orderService.findById(id);
+        return representations.toDetails(order);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateOrder(@PathVariable UUID id,
+                                         @Valid @RequestBody OrderInputDto payload,
+                                         Errors errors) {
+
+        Order existing = orderService.findById(id);
+
+        payload.validate(errors, productService);
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        Order updated = orderService.save(representations.from(payload, existing));
+
+        return ResponseEntity.ok(representations.toDetails(updated));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('STAFF')")
-    public ResponseEntity<?> deleteOrderById(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteOrder(@PathVariable UUID id) {
         orderService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

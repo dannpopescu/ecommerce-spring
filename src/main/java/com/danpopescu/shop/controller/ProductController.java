@@ -37,14 +37,14 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductOutputDto> getAllProducts() {
+    public List<ProductOutputDto> getProducts() {
         return productService.findAll().stream()
                 .map(representations::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ProductOutputDto getById(@PathVariable UUID id) {
+    public ProductOutputDto getProduct(@PathVariable UUID id) {
         Product product = productService.findById(id);
         return representations.toDto(product);
     }
@@ -60,7 +60,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
         productService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

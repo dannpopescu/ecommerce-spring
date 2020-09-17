@@ -15,4 +15,6 @@ public interface ProductService {
     void deleteById(UUID id) throws ResourceNotFoundException;
 
     Product save(Product product);
+
+    boolean existsById(UUID id);
 }
