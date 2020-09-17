@@ -29,7 +29,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String UUID_REGEX = "\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b";
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -49,8 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             it.mvcMatchers("/staff").hasRole("ADMIN");
             it.mvcMatchers(HttpMethod.POST, "/customers").permitAll();
             it.mvcMatchers("/customers/**").hasRole("STAFF");
-            it.mvcMatchers(HttpMethod.GET, "/products").permitAll();
-            it.mvcMatchers(HttpMethod.GET, "/products/{userId:" + UUID_REGEX + "}").permitAll();
+            it.mvcMatchers(HttpMethod.GET, "/products/**").permitAll();
+            it.mvcMatchers("/products/**").hasRole("STAFF");
             it.anyRequest().authenticated();
         });
 

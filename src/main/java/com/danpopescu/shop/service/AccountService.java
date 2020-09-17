@@ -1,5 +1,6 @@
 package com.danpopescu.shop.service;
 
+import com.danpopescu.shop.exception.ResourceNotFoundException;
 import com.danpopescu.shop.model.Account;
 
 import java.util.List;
@@ -11,8 +12,6 @@ public interface AccountService {
 
     boolean existsByEmail(String email);
 
-    boolean existsById(UUID id);
-
     Account save(Account account);
 
     Account createStaffAccount(Account account);
@@ -23,15 +22,11 @@ public interface AccountService {
 
     List<Account> findAllCustomerAccounts();
 
-    Account findById(UUID id);
-
-    void deleteById(UUID id);
-
     void changePassword(Account account, String password);
 
-    Account findStaffAccountById(UUID id);
+    Account findStaffAccountById(UUID id) throws ResourceNotFoundException;
 
-    Account findCustomerAccountById(UUID id);
+    Account findCustomerAccountById(UUID id) throws ResourceNotFoundException;
 
-    void deleteCustomerAccountById(UUID id);
+    void deleteCustomerAccountById(UUID id) throws ResourceNotFoundException;
 }

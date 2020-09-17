@@ -1,6 +1,7 @@
 package com.danpopescu.shop.payload;
 
 import com.danpopescu.shop.model.Account;
+import com.danpopescu.shop.payload.AddressRepresentations.AddressDto;
 import com.danpopescu.shop.service.AccountService;
 import com.danpopescu.shop.validation.Username;
 import io.jsonwebtoken.lang.Objects;
@@ -79,7 +80,7 @@ public class AccountRepresentations {
     @Data
     public static class AccountDetailsDto {
         private String id, firstName, lastName, email, username;
-        private AddressRepresentations.AddressDto address;
+        private AddressDto address;
     }
 
     @Data
@@ -88,7 +89,7 @@ public class AccountRepresentations {
         private @NotBlank @Email String email;
         private @NotBlank @Username String username;
         private @NotBlank String password, passwordConfirm;
-        private @NotNull @Valid AddressRepresentations.AddressDto address;
+        private @NotNull @Valid AddressDto address;
 
         public void validate(Errors errors, AccountService accountService) {
             validateUsername(errors, this.username, accountService);
@@ -102,7 +103,7 @@ public class AccountRepresentations {
         private @NotBlank String firstName, lastName;
         private @NotBlank @Email String email;
         private @NotBlank @Username String username;
-        private @NotNull @Valid AddressRepresentations.AddressDto address;
+        private @NotNull @Valid AddressDto address;
         private @NotNull Boolean active;
 
         public void validate(Errors errors, Account existing, AccountService accountService) {

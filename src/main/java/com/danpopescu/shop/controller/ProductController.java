@@ -1,11 +1,12 @@
 package com.danpopescu.shop.controller;
 
 import com.danpopescu.shop.model.Product;
-import com.danpopescu.shop.payload.CreateProductRequest;
+import com.danpopescu.shop.payload.ProductRepresentations;
+import com.danpopescu.shop.payload.ProductRepresentations.ProductInputDto;
+import com.danpopescu.shop.payload.ProductRepresentations.ProductOutputDto;
 import com.danpopescu.shop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -13,6 +14,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/products")
@@ -20,33 +22,44 @@ import java.util.UUID;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductRepresentations representations;
 
     @PostMapping
-    @PreAuthorize("hasRole('STAFF')")
-    public ResponseEntity<?> createProduct(@Valid @RequestBody CreateProductRequest productRequest) {
-        Product product = productService.createProduct(productRequest);
+    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductInputDto payload) {
+
+        Product product = productService.save(representations.from(payload));
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(product.getId())
-                .toUri();
+                .fromCurrentRequest().path("/{id}")
+                .buildAndExpand(product.getId()).toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(representations.toDto(product));
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAll();
+    public List<ProductOutputDto> getAllProducts() {
+        return productService.findAll().stream()
+                .map(representations::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Product getById(@PathVariable UUID id) {
-        return productService.getById(id);
+    public ProductOutputDto getById(@PathVariable UUID id) {
+        Product product = productService.findById(id);
+        return representations.toDto(product);
+    }
+
+    @PutMapping("/{id}")
+    public ProductOutputDto updateProduct(@PathVariable UUID id,
+                                          @Valid @RequestBody ProductInputDto payload) {
+
+        Product existing = productService.findById(id);
+        Product updated = productService.save(representations.from(payload, existing));
+
+        return representations.toDto(updated);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('STAFF')")
     public ResponseEntity<?> deleteById(@PathVariable UUID id) {
         productService.deleteById(id);
         return ResponseEntity.noContent().build();

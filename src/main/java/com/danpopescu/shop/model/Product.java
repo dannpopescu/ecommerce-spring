@@ -1,8 +1,7 @@
 package com.danpopescu.shop.model;
 
 import com.danpopescu.shop.model.audit.DateAudit;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +15,9 @@ import java.math.BigDecimal;
 @Table(name = "products")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Product extends DateAudit {
 
     @NotBlank

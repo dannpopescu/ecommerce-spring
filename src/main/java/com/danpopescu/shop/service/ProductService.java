@@ -1,20 +1,18 @@
 package com.danpopescu.shop.service;
 
+import com.danpopescu.shop.exception.ResourceNotFoundException;
 import com.danpopescu.shop.model.Product;
-import com.danpopescu.shop.payload.CreateProductRequest;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
 
-    Product createProduct(CreateProductRequest productRequest);
+    List<Product> findAll();
 
-    List<Product> getAll();
+    Product findById(UUID id) throws ResourceNotFoundException;
 
-    Product getById(UUID id);
-
-    void deleteById(UUID id);
+    void deleteById(UUID id) throws ResourceNotFoundException;
 
     Product save(Product product);
 }
