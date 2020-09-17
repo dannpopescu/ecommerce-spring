@@ -1,7 +1,7 @@
 package com.danpopescu.shop.service;
 
-import com.danpopescu.shop.exception.ResourceNotFoundException;
-import com.danpopescu.shop.model.Account;
+import com.danpopescu.shop.domain.Account;
+import com.danpopescu.shop.web.exception.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.UUID;

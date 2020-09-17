@@ -1,6 +1,6 @@
 package com.danpopescu.shop.config;
 
-import com.danpopescu.shop.security.jwt.JwtAuthenticationFilter;
+import com.danpopescu.shop.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;

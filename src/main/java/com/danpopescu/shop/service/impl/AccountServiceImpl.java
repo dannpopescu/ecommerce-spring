@@ -1,10 +1,10 @@
 package com.danpopescu.shop.service.impl;
 
-import com.danpopescu.shop.exception.ResourceNotFoundException;
-import com.danpopescu.shop.model.Account;
-import com.danpopescu.shop.model.Role;
-import com.danpopescu.shop.repository.AccountRepository;
+import com.danpopescu.shop.domain.Account;
+import com.danpopescu.shop.domain.Role;
+import com.danpopescu.shop.persistence.repository.AccountRepository;
 import com.danpopescu.shop.service.AccountService;
+import com.danpopescu.shop.web.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

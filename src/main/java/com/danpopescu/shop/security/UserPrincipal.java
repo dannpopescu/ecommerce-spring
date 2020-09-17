@@ -1,6 +1,6 @@
 package com.danpopescu.shop.security;
 
-import com.danpopescu.shop.model.Account;
+import com.danpopescu.shop.domain.Account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;

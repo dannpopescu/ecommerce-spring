@@ -1,6 +1,6 @@
 package com.danpopescu.shop.service;
 
-import com.danpopescu.shop.model.Order;
+import com.danpopescu.shop.domain.Order;
 
 import java.util.List;
 import java.util.UUID;

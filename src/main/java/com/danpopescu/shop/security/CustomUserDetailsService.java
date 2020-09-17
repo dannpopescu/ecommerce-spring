@@ -1,7 +1,7 @@
 package com.danpopescu.shop.security;
 
-import com.danpopescu.shop.model.Account;
-import com.danpopescu.shop.repository.AccountRepository;
+import com.danpopescu.shop.domain.Account;
+import com.danpopescu.shop.persistence.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,9 +1,9 @@
 package com.danpopescu.shop.bootstrap;
 
-import com.danpopescu.shop.model.Account;
-import com.danpopescu.shop.model.Address;
-import com.danpopescu.shop.model.Role;
-import com.danpopescu.shop.repository.AccountRepository;
+import com.danpopescu.shop.domain.Account;
+import com.danpopescu.shop.domain.Address;
+import com.danpopescu.shop.domain.Role;
+import com.danpopescu.shop.persistence.repository.AccountRepository;
 import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

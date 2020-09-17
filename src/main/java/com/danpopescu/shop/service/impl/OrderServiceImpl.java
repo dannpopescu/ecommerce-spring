@@ -1,9 +1,9 @@
 package com.danpopescu.shop.service.impl;
 
-import com.danpopescu.shop.exception.ResourceNotFoundException;
-import com.danpopescu.shop.model.Order;
-import com.danpopescu.shop.repository.OrderRepository;
+import com.danpopescu.shop.domain.Order;
+import com.danpopescu.shop.persistence.repository.OrderRepository;
 import com.danpopescu.shop.service.OrderService;
+import com.danpopescu.shop.web.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
