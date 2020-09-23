@@ -1,10 +1,9 @@
 package com.danpopescu.shop.service.impl;
 
-import com.danpopescu.shop.exception.ResourceNotFoundException;
-import com.danpopescu.shop.model.Product;
-import com.danpopescu.shop.payload.CreateProductRequest;
-import com.danpopescu.shop.repository.ProductRepository;
+import com.danpopescu.shop.domain.Product;
+import com.danpopescu.shop.persistence.repository.ProductRepository;
 import com.danpopescu.shop.service.ProductService;
+import com.danpopescu.shop.web.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,29 +18,20 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public Product createProduct(CreateProductRequest productRequest) {
-        Product product = new Product();
-        product.setTitle(productRequest.getTitle());
-        product.setDescription(productRequest.getDescription());
-        product.setPrice(productRequest.getPrice());
-        return productRepository.save(product);
-    }
-
-    @Override
-    public List<Product> getAll() {
+    public List<Product> findAll() {
         List<Product> products = new ArrayList<>();
         productRepository.findAll().forEach(products::add);
         return products;
     }
 
     @Override
-    public Product getById(UUID id) {
+    public Product findById(UUID id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
     }
 
     @Override
-    public void deleteById(UUID id) {
+    public void deleteById(UUID id) throws ResourceNotFoundException {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Product", "id", id);
         }
@@ -51,5 +41,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product save(Product product) {
         return productRepository.save(product);
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return productRepository.existsById(id);
     }
 }

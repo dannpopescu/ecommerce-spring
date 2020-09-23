@@ -1,6 +1,6 @@
 package com.danpopescu.shop.security;
 
-import com.danpopescu.shop.model.User;
+import com.danpopescu.shop.domain.Account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
@@ -39,16 +39,16 @@ public class UserPrincipal implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserPrincipal create(User user) {
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
+    public static UserPrincipal create(Account account) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(account.getRole().name()));
 
         return UserPrincipal.builder()
-                .id(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .password(user.getPassword())
+                .id(account.getId())
+                .firstName(account.getFirstName())
+                .lastName(account.getLastName())
+                .username(account.getUsername())
+                .email(account.getEmail())
+                .password(account.getPassword())
                 .authorities(authorities)
                 .build();
     }

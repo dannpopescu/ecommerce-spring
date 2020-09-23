@@ -1,6 +1,6 @@
 package com.danpopescu.shop.config;
 
-import com.danpopescu.shop.security.jwt.JwtAuthenticationFilter;
+import com.danpopescu.shop.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -29,7 +29,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String UUID_REGEX = "\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b";
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -39,26 +38,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .cors()
-                    .and()
-                .csrf()
-                    .disable()
-                .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                .authorizeRequests()
-                    .expressionHandler(webExpressionHandler())
-                    .antMatchers("/auth/**")
-                        .permitAll()
-                    .mvcMatchers(HttpMethod.POST, "/customers")
-                        .permitAll()
-                    .mvcMatchers(HttpMethod.GET, "/products")
-                        .permitAll()
-                    .mvcMatchers(HttpMethod.GET, "/products/{userId:" + UUID_REGEX + "}")
-                        .permitAll()
-                    .anyRequest()
-                        .authenticated();
+        http.csrf().disable();
+        http.cors();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.authorizeRequests(it -> {
+            it.expressionHandler(webExpressionHandler());
+            it.mvcMatchers("/auth/**").permitAll();
+            it.mvcMatchers("/staff/**").hasRole("ADMIN");
+            it.mvcMatchers(HttpMethod.POST, "/customers").permitAll();
+            it.mvcMatchers(HttpMethod.GET, "/products/**").permitAll();
+            it.mvcMatchers(HttpMethod.POST, "/orders").hasRole("CUSTOMER");
+            it.mvcMatchers("/customers/**", "/products/**", "/orders/**").hasRole("STAFF");
+            it.anyRequest().authenticated();
+        });
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
