@@ -45,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests(it -> {
             it.expressionHandler(webExpressionHandler());
             it.mvcMatchers("/auth/**").permitAll();
-            it.mvcMatchers("/staff").hasRole("ADMIN");
+            it.mvcMatchers("/staff/**").hasRole("ADMIN");
             it.mvcMatchers(HttpMethod.POST, "/customers").permitAll();
             it.mvcMatchers(HttpMethod.GET, "/products/**").permitAll();
             it.mvcMatchers(HttpMethod.POST, "/orders").hasRole("CUSTOMER");
